@@ -1,10 +1,5 @@
 {% macro lk_final_output() %}
 SELECT stat_creative.*, campaign_data.* EXCEPT(campaign_id) ,
-SPLIT(campaign_name,'_')[OFFSET(1)] AS campaign_descr,
-CASE 
-  WHEN ARRAY_LENGTH(SPLIT(campaign_name, '_')) >= 8 THEN SPLIT(campaign_name, '_')[OFFSET(7)] 
-  ELSE NULL
-END AS audience_name,
 CASE 
         WHEN SPLIT (campaign_name,'_')[OFFSET(2)] LIKE '%SOCIAL%'
         AND (
@@ -19,18 +14,24 @@ CASE
         THEN 'Social Display'
         ELSE 'Other'
   END AS media_format,
-CASE 
-  WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 7 THEN SPLIT(creative_name, '_')[OFFSET(5)] 
-  ELSE NULL
-END AS ad_format_detail,
-CASE 
-  WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 7 THEN SPLIT(creative_name, '_')[OFFSET(ARRAY_LENGTH(SPLIT(creative_name, '_')) -2 )] 
-  ELSE NULL
-END AS ad_format,
-CASE 
-  WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 7 THEN SPLIT(creative_name, '_')[OFFSET(ARRAY_LENGTH(SPLIT(creative_name, '_')) -1 )] 
-  ELSE NULL
-END AS creative_descr,
+    CASE WHEN ARRAY_LENGTH(SPLIT(campaign_name, '_')) < 8 AND ARRAY_LENGTH(SPLIT(campaign_name, '_')) > 1  
+         THEN SPLIT(campaign_name, '_')[SAFE_OFFSET(ARRAY_LENGTH(SPLIT(campaign_name, '_'))-1)] 
+         WHEN ARRAY_LENGTH(SPLIT(campaign_name, '_')) >= 8 THEN SPLIT(campaign_name, '_')[SAFE_OFFSET(7)] 
+         ELSE 'Other' END AS audience_name,
+    CASE WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) < 8 AND ARRAY_LENGTH(SPLIT(creative_name, '_')) > 1  
+         THEN SPLIT(creative_name, '_')[SAFE_OFFSET(ARRAY_LENGTH(SPLIT(creative_name, '_'))-1)] 
+         WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 8 THEN SPLIT(creative_name, '_')[SAFE_OFFSET(7)] 
+         ELSE 'Other' END AS creative_descr,
+    CASE WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 8 THEN SPLIT(creative_name, '_')[SAFE_OFFSET(5)] 
+         WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) < 8 AND ARRAY_LENGTH(SPLIT(creative_name, '_')) > 1  
+         THEN SPLIT(creative_name, '_')[SAFE_OFFSET(ARRAY_LENGTH(SPLIT(creative_name, '_'))-3)] 
+         ELSE 'Other' END AS ad_format_detail,
+    CASE WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 8 THEN SPLIT(creative_name, '_')[SAFE_OFFSET(6)] 
+         WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) < 8 AND ARRAY_LENGTH(SPLIT(creative_name, '_')) > 1  
+         THEN SPLIT(creative_name, '_')[SAFE_OFFSET(ARRAY_LENGTH(SPLIT(creative_name, '_'))-2)] 
+         ELSE 'Other' END AS ad_format,
+    CASE WHEN ARRAY_LENGTH(SPLIT(campaign_name,'_')) <=1 THEN 'Other'
+        ELSE SPLIT(campaign_name,'_')[SAFE_OFFSET(1)] END AS campaign_descr
 'Linkedin' as publisher
 
 FROM 
