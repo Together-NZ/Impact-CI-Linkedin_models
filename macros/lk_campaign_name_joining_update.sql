@@ -26,5 +26,11 @@ joint_campaign_group as (
   SELECT update_audience_name.*,distinct_campaign_group_campaign_link.campaign_group_name
   FROM update_audience_name LEFT JOIN distinct_campaign_group_campaign_link ON update_audience_name.campaign_group_id = distinct_campaign_group_campaign_link.campaign_group_id
 
+),
+update_campaign_name as (
+  select joint_campaign_group.* EXCEPT(campaign_name,campaign_group_name),
+  CASE WHEN campaign_group_name is null then campaign_name else campaign_group_name 
+  END AS campaign_name 
+  FROM joint_campaign_group
 )
 {% endmacro %}

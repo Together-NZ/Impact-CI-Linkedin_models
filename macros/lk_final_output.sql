@@ -14,8 +14,6 @@ CASE
         THEN 'Social Display'
         ELSE 'Other'
   END AS media_format,
-    CASE WHEN ARRAY_LENGTH(SPLIT(campaign_name, '_')) >= 8 THEN SPLIT(campaign_name, '_')[SAFE_OFFSET(7)] 
-         ELSE 'Other' END AS audience_name,
     CASE WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 7 THEN SPLIT(creative_name, '_')[SAFE_OFFSET(7)] 
          ELSE 'Other' END AS creative_descr,
     CASE WHEN ARRAY_LENGTH(SPLIT(creative_name, '_')) >= 7 THEN SPLIT(creative_name, '_')[SAFE_OFFSET(5)] 
