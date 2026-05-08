@@ -4,6 +4,6 @@ campaign_group_campaign_link AS (
    FROM {{ source(source_name, table_name) }} 
   ),
 distinct_campaign_group_campaign_link AS (
-  SELECT * FROM campaign_group_campaign_link WHERE modified_date > '2025-09-01' and row_num=1 and lower(campaign_group_name) like '%uow%'
+  SELECT * FROM campaign_group_campaign_link WHERE modified_date > '2025-09-01' and row_num=1 
 )
 {% endmacro %}

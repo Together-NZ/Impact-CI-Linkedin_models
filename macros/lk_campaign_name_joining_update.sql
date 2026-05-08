@@ -17,15 +17,14 @@ campaign_stats AS (      SELECT
     ROW_NUMBER() OVER (PARTITION BY JSON_VALUE(data, '$.id'),JSON_VALUE(data, '$.account_id'),FORMAT_DATE('%F', DATETIME(TIMESTAMP_MILLIS(safe_cast(JSON_VALUE(data, '$.runSchedule.start') as int64)), "Pacific/Auckland")), FORMAT_DATE('%F', DATETIME(TIMESTAMP_MILLIS(safe_cast(JSON_VALUE(data, '$.runSchedule.end') as int64)), "Pacific/Auckland")) ) as row_num
     from {{ source(source_name, table_name) }}),
 deduplicated_campaign_data AS (SELECT * EXCEPT(row_num) FROM campaign_stats where row_num = 1),
-joint_campaign_group as (
-  SELECT deduplicated_campaign_data.*,distinct_campaign_group_campaign_link.campaign_group_name
-  FROM deduplicated_campaign_data LEFT JOIN distinct_campaign_group_campaign_link ON deduplicated_campaign_data.campaign_group_id = distinct_campaign_group_campaign_link.campaign_group_id
-
+update_audience_name AS (
+  SELECT *,
+  COALESCE(REGEXP_EXTRACT(campaign_name, r'(?:PLATFORM|1PD)_([^_]+)'), 'Other') AS audience_name
+  FROM deduplicated_campaign_data
 ),
-update_campaign_name as (
-  select joint_campaign_group.* EXCEPT(campaign_name,campaign_group_name),
-  CASE WHEN campaign_group_name is null then campaign_name else campaign_group_name 
-  END AS campaign_name 
-  FROM joint_campaign_group
+joint_campaign_group as (
+  SELECT update_audience_name.*,distinct_campaign_group_campaign_link.campaign_group_name
+  FROM update_audience_name LEFT JOIN distinct_campaign_group_campaign_link ON update_audience_name.campaign_group_id = distinct_campaign_group_campaign_link.campaign_group_id
+
 )
 {% endmacro %}
