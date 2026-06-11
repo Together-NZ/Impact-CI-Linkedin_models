@@ -1,12 +1,12 @@
 {% macro lk_final_output() %}
 SELECT stat_creative.*, campaign_data.* EXCEPT(campaign_id) ,
 CASE 
-        WHEN SPLIT (campaign_name,'_')[OFFSET(2)] LIKE '%SOCIAL%'
+        WHEN ARRAY_LENGTH(SPLIT(campaign_name,'_')) >= 3 AND SPLIT (campaign_name,'_')[OFFSET(2)] LIKE '%SOCIAL%'
         AND (
             lower(creative_name) LIKE '%vid%'
             OR lower(campaign_name) LIKE '%vid%'
         ) THEN 'Social Video'
-        WHEN SPLIT (campaign_name,'_')[OFFSET(2)] LIKE '%SOCIAL%'
+        WHEN ARRAY_LENGTH(SPLIT(campaign_name,'_')) >= 3 AND SPLIT (campaign_name,'_')[OFFSET(2)] LIKE '%SOCIAL%'
         AND (
             lower(creative_name) NOT LIKE '%vid%'
             AND lower(campaign_name) NOT LIKE '%vid%'
