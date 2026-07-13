@@ -12,3 +12,4 @@ creative_campaign_link_raw AS (
 creative_campaign_link AS (
   SELECT * EXCEPT(row_num) FROM creative_campaign_link_raw WHERE row_num = 1
 ),
+{% endmacro %}
