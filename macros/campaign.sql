@@ -1,4 +1,4 @@
-{% macro lk_campaign(source_name, table_name) %}
+{% macro campaign(source_name, table_name) %}
 campaign as (
   SELECT
     JSON_VALUE(data, '$.id') AS campaign_id,
