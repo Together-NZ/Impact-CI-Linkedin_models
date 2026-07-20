@@ -28,7 +28,8 @@
          ELSE 'Other' END AS ad_format,
     CASE WHEN ARRAY_LENGTH(SPLIT(campaign_name,'_')) <=1 THEN 'Other'
         ELSE SPLIT(campaign_name,'_')[SAFE_OFFSET(1)] END AS campaign_descr,
-'Linkedin' as publisher
+'Linkedin' as publisher,
+'Linkedin' as platform
     FROM joint_daily_stats_platform_info
 
 )
